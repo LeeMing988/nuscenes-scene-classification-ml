@@ -120,10 +120,7 @@ nuscenes-scene-classification-ml/
 │   │   ├── final_summary.json
 │   │   └── scaling_roadmap.json            # exact steps to scale to v1.0-trainval
 │   └── figures/                            # all generated plots
-│
-├── report/
-│   └── report.pdf                          # final written report
-│
+│ 
 ├── requirements.txt
 └── README.md
 ```
