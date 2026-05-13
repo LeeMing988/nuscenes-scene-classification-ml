@@ -52,21 +52,6 @@ This project investigates whether classical machine learning on hand-crafted vis
 
 ---
 
-## Key results (v1.0-mini, 5-fold scene-aware CV)
-
-| Attribute | Best Model | Mean Macro-F1 | Difficulty Tier |
-|---|---|---|---|
-| `time_of_day` | XGBoost | 0.968 | Easy |
-| `weather` | SVM | 0.870 | Easy |
-| `vehicle_density` | LogReg | 0.278 | Hard |
-| `vru_present` | MLP | 0.437 | Hard |
-
-**Most consistent model across attributes:** XGBoost
-
-**Key finding:** Hand-crafted features support photometric attribute classification (time_of_day, weather) but are insufficient for shape-based counting tasks (vehicle_density, vru_present) at v1.0-mini scale. The asymmetry reflects the discriminative axis of each attribute — global lighting statistics are captured well by color/photometric features; object counting requires spatial reasoning beyond classical descriptors.
-
----
-
 ## Repository structure
 
 ```
