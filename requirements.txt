@@ -1,0 +1,44 @@
+# =============================================================================
+# Multi-Attribute Scene Classification on nuScenes — Requirements
+# =============================================================================
+#
+# Python: 3.10–3.12 recommended (tested on Python 3.12)
+# Install: pip install -r requirements.txt
+#
+# These pins reflect the versions used during development. Newer minor versions
+# should generally work, but reproducibility is best with these exact pins.
+
+# --- Core scientific stack ---
+numpy==1.26.4
+pandas==2.2.0
+scipy==1.12.0
+
+# --- Machine learning ---
+scikit-learn==1.4.0
+xgboost==2.0.3
+
+# --- Image processing & feature extraction ---
+scikit-image==0.22.0
+opencv-python==4.9.0.80
+Pillow==10.2.0
+
+# --- nuScenes devkit ---
+nuscenes-devkit==1.1.11
+pyquaternion==0.9.9
+
+# --- Plotting & visualization ---
+matplotlib==3.8.2
+seaborn==0.13.2
+
+# --- Notebook environment ---
+jupyter==1.0.0
+notebook==7.0.7
+ipykernel==6.29.0
+nbformat==5.9.2
+
+# --- Utilities ---
+tqdm==4.66.1
+
+# --- Optional but recommended ---
+# joblib is installed automatically with scikit-learn
+# IPython is installed automatically with jupyter

@@ -1,0 +1,9 @@
+# Ignore all contents within these directories
+/data/*
+/models/*
+/results/*
+
+# But force Git to track the empty directories via .gitkeep
+!/data/.gitkeep
+!/models/.gitkeep
+!/results/.gitkeep
