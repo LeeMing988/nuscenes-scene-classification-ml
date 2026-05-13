@@ -10,6 +10,7 @@ A comparative study of classical machine-learning models for multi-attribute sce
 | Field | Details |
 |---|---|
 | **Author** | YEOH LEE MING |
+| **Student ID** | TP118013 |
 | **Course** | Applied Machine Learning (Master in AI) |
 | **Institution** | Asia Pacific University of Technology & Innovation (APU) |
 | **Date** | May 2026 |
@@ -20,7 +21,7 @@ A comparative study of classical machine-learning models for multi-attribute sce
 
 Modern autonomous driving systems must continuously interpret their operating context — the time of day, weather conditions, surrounding traffic density, and the presence of vulnerable road users (VRUs). While much of the published literature focuses on object detection and trajectory prediction, **scene-level operational-context classification** has received comparatively less attention as a standalone task.
 
-This project investigates whether **classical machine learning** on **hand-crafted visual features** can reliably classify multiple operational scene attributes from a single front-camera image on nuScenes. We use traditional feature-engineering methods (HOG, color histograms, LBP, photometric statistics) paired with five model families, evaluated using 5-fold scene-aware cross-validation to prevent scene leakage. Statistical comparisons are reported using non-parametric tests in the spirit of Demšar (2006).
+This project investigates whether classical machine learning on hand-crafted visual features can reliably classify multiple operational scene attributes from a single front-camera image on nuScenes. We use traditional feature-engineering methods (HOG, color histograms, LBP, photometric statistics) paired with five model families, evaluated using 5-fold scene-aware cross-validation to prevent scene leakage. Statistical comparisons are reported using non-parametric tests.
 
 ### The four scene attributes
 
@@ -71,7 +72,7 @@ This project investigates whether **classical machine learning** on **hand-craft
 ```
 nuscenes-scene-classification-ml/
 ├── data/
-│   ├── nuscenes/v1.0-mini/                 # raw dataset (NOT in repo — see Setup)
+│   ├── v1.0-mini/                          # raw dataset (NOT in repo — see Setup)
 │   ├── metadata/
 │   │   ├── sample_metadata.csv             # per-keyframe metadata (notebook 01)
 │   │   └── sample_metadata_enriched.csv    # + forward-cone object counts
@@ -94,18 +95,18 @@ nuscenes-scene-classification-ml/
 │   ├── 01_eda.ipynb                        # exploratory data analysis
 │   ├── 02_attribute_labels.ipynb           # generate 4 attribute labels
 │   ├── 03_image_features.ipynb             # HOG + color hist + LBP + photometric
-│   │                                        # + preprocessing doc + synthetic demos
+│   │                                       # + preprocessing doc + synthetic demos
 │   ├── 04_splits.ipynb                     # 5-fold scene-aware CV splits
 │   ├── 05a_dim_reduction.ipynb             # PCA + LDA (fold 0 representative)
 │   ├── 05b_preprocessing_ablation.ipynb    # hist_eq vs CLAHE vs none (fold 0)
 │   ├── 06_classical_models.ipynb           # 5 models × base+tuned × 4 attrs
-│   │                                        # × 3 seeds × 5 folds = 600 fits
+│   │                                       # × 3 seeds × 5 folds = 600 fits
 │   ├── 07_feature_ablation.ipynb           # 5 subsets × 5 models × 4 attrs
-│   │                                        # × 3 seeds × 5 folds = 1500 fits
+│   │                                       # × 3 seeds × 5 folds = 1500 fits
 │   ├── 08a_headline_results.ipynb          # k-fold aggregated tables
 │   ├── 08b_visual_analysis_and_stats.ipynb # confusion matrices, ROC, Wilcoxon tests
 │   └── 08c_deep_analysis.ipynb             # feature importance, error analysis,
-│                                            # RQ summary + scaling roadmap
+│                                           # RQ summary + scaling roadmap
 │
 ├── models/
 │   └── fold_<k>/<attr>/                    # trained .pkl checkpoints per fold
@@ -170,15 +171,16 @@ pip install -r requirements.txt
 ```
 
 ### Dataset
+The nuScenes dataset must be obtained directly from the official nuScenes website due to licensing restrictions. This repository does not redistribute any part of the dataset. Users must register for a free account, agree to the dataset terms of use, and download the `v1.0-mini` release before running the notebooks.
 
 The nuScenes dataset is **not redistributed** in this repository. Download separately:
 
 1. Create a free account at [nuscenes.org](https://www.nuscenes.org/nuscenes#download)
 2. Download **`v1.0-mini`** (~4 GB)
-3. Extract into `data/nuscenes/v1.0-mini/` so the structure looks like:
+3. Extract into `data/v1.0-mini/` so the structure looks like:
 
 ```
-data/nuscenes/v1.0-mini/
+data/v1.0-mini/
 ├── maps/
 ├── samples/
 ├── sweeps/
@@ -289,30 +291,6 @@ Expected improvements: weather and vehicle_density become reliably evaluable; al
 jupyter notebook
 # Run notebooks 01 → 02 → 03 → 04 → 05a → 05b → 06 → 07 → 08a → 08b → 08c
 ```
-
----
-
-## References
-
-- Caesar, H. et al. (2020). *nuScenes: A multimodal dataset for autonomous driving.* CVPR.
-- Dalal, N. & Triggs, B. (2005). *Histograms of Oriented Gradients for human detection.* CVPR.
-- Ojala, T. et al. (2002). *Multiresolution gray-scale and rotation invariant texture classification with local binary patterns.* TPAMI.
-- Chen, T. & Guestrin, C. (2016). *XGBoost: A scalable tree boosting system.* KDD.
-- Cortes, C. & Vapnik, V. (1995). *Support-vector networks.* Machine Learning.
-- Breiman, L. (2001). *Random forests.* Machine Learning.
-- Demšar, J. (2006). *Statistical comparisons of classifiers over multiple data sets.* JMLR, 7, 1–30.
-- Pearson, K. (1901). *On lines and planes of closest fit to systems of points in space.* Philosophical Magazine.
-- Fisher, R. A. (1936). *The use of multiple measurements in taxonomic problems.* Annals of Eugenics.
-- Swain, M. J. & Ballard, D. H. (1991). *Color indexing.* IJCV.
-- Lowe, D. G. (2004). *Distinctive image features from scale-invariant keypoints.* IJCV.
-- Geiger, A. et al. (2012). *Are we ready for autonomous driving? The KITTI vision benchmark suite.* CVPR.
-- Sun, P. et al. (2020). *Scalability in perception for autonomous driving: Waymo Open Dataset.* CVPR.
-- Yu, F. et al. (2020). *BDD100K: A diverse driving dataset for heterogeneous multitask learning.* CVPR.
-- Sakaridis, C., Dai, D. & Van Gool, L. (2018). *Semantic foggy scene understanding with synthetic data.* IJCV.
-- Chawla, N. V. et al. (2002). *SMOTE: Synthetic minority over-sampling technique.* JAIR.
-- Pinggera, P. et al. (2016). *Lost and Found: Detecting small road hazards for self-driving vehicles.* IROS.
-
-A complete annotated reading list is included in `report/report.pdf`.
 
 ---
 
