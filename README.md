@@ -1,5 +1,10 @@
 # nuscenes-scene-classification-ml
 
+![Python](https://img.shields.io/badge/python-3.10--3.12-blue)
+![Methodology](https://img.shields.io/badge/methodology-5--fold%20scene--aware%20CV-green)
+![License](https://img.shields.io/badge/license-Academic-orange)
+![Status](https://img.shields.io/badge/status-Complete-success)
+
 A comparative study of classical machine-learning models for multi-attribute scene classification of front-camera driving images on the [nuScenes](https://www.nuscenes.org/) autonomous driving dataset.
 
 | Field | Details |
@@ -15,7 +20,7 @@ A comparative study of classical machine-learning models for multi-attribute sce
 
 Modern autonomous driving systems must continuously interpret their operating context — the time of day, weather conditions, surrounding traffic density, and the presence of vulnerable road users (VRUs). While much of the published literature focuses on object detection and trajectory prediction, **scene-level operational-context classification** has received comparatively less attention as a standalone task.
 
-This project investigates whether **classical machine learning** on **hand-crafted visual features** can reliably predict multiple operational scene attributes from a single front-camera image on nuScenes. We use only pre-deep-learning techniques (HOG, color histograms, LBP, photometric statistics) paired with five classical model families, evaluated using **5-fold scene-aware cross-validation** following Demšar (2006).
+This project investigates whether **classical machine learning** on **hand-crafted visual features** can reliably classify multiple operational scene attributes from a single front-camera image on nuScenes. We use traditional feature-engineering methods (HOG, color histograms, LBP, photometric statistics) paired with five model families, evaluated using 5-fold scene-aware cross-validation to prevent scene leakage. Statistical comparisons are reported using non-parametric tests in the spirit of Demšar (2006).
 
 ### The four scene attributes
 
@@ -315,6 +320,23 @@ A complete annotated reading list is included in `report/report.pdf`.
 
 This is an academic project. Code is provided as-is for educational purposes.
 The nuScenes dataset is licensed separately — see [nuscenes.org/terms-of-use](https://www.nuscenes.org/terms-of-use).
+
+---
+
+## Citation
+
+If you reference this work, please cite:
+
+```bibtex
+@misc{yeoh2026nuscenes,
+  author = {Yeoh, Lee Ming},
+  title  = {Multi-Attribute Scene Classification of Front-Camera Driving Images:
+            A Comparative Classical Machine Learning Study on the nuScenes Dataset},
+  year   = {2026},
+  institution = {Asia Pacific University of Technology and Innovation},
+  url    = {https://github.com/LeeMing988/nuscenes-scene-classification-ml}
+}
+```
 
 ---
 
