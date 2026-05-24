@@ -1,11 +1,12 @@
 # nuscenes-scene-classification-ml
 
-![Python](https://img.shields.io/badge/python-3.10--3.12-blue)
+![Python](https://img.shields.io/badge/python-3.12.10-blue)
 ![Methodology](https://img.shields.io/badge/methodology-5--fold%20scene--aware%20CV-green)
+![Stages](https://img.shields.io/badge/study-two--stage%20(mini%20%E2%86%92%20150--scene)-blueviolet)
 ![License](https://img.shields.io/badge/license-Academic-orange)
 ![Status](https://img.shields.io/badge/status-Complete-success)
 
-A comparative study of classical machine-learning models for multi-attribute scene classification of front-camera driving images on the [nuScenes](https://www.nuscenes.org/) autonomous driving dataset.
+A comparative study of classical machine-learning models for **multi-attribute scene classification** of front-camera driving images on the [nuScenes](https://www.nuscenes.org/) autonomous-driving dataset.
 
 | Field | Details |
 |---|---|
@@ -19,18 +20,31 @@ A comparative study of classical machine-learning models for multi-attribute sce
 
 ## Project overview
 
-Modern autonomous driving systems must continuously interpret their operating context — the time of day, weather conditions, surrounding traffic density, and the presence of vulnerable road users (VRUs). While much of the published literature focuses on object detection and trajectory prediction, **scene-level operational-context classification** has received comparatively less attention as a standalone task.
+Autonomous-driving systems must continuously interpret their operating context — time of day, weather, surrounding traffic density, and the presence of vulnerable road users (VRUs). While the nuScenes literature focuses overwhelmingly on deep 3D object detection and tracking, **holistic scene-level attribute classification** using classical machine learning is comparatively unexplored.
 
-This project investigates whether classical machine learning on hand-crafted visual features can reliably classify multiple operational scene attributes from a single front-camera image on nuScenes. We use traditional feature-engineering methods (HOG, color histograms, LBP, photometric statistics) paired with five model families, evaluated using 5-fold scene-aware cross-validation to prevent scene leakage. Statistical comparisons are reported using non-parametric tests.
+This project asks whether classical ML on hand-crafted visual features can reliably classify four operational scene attributes from a single front-camera image, **and how dataset scale affects both performance and evaluation validity**. Five classical model families are compared across four independent classification tasks, evaluated with 5-fold scene-aware cross-validation to prevent scene leakage.
+
+### Two-stage design
+
+The study is deliberately structured as **prototype → primary experiment**:
+
+| Stage | Dataset | Role |
+|---|---|---|
+| **Stage 1** | `v1.0-mini` (10 scenes, 404 keyframes) | **Pilot / methodology development** — EDA, label design, feature engineering, dimensionality & preprocessing ablations, feature ablation. Establishes and justifies the pipeline. Found to be **too small for reliable evaluation** (see Findings). |
+| **Stage 2** | `v1.0-trainval` 150-scene subset (6,021 keyframes) | **Primary experiment** — the validated pipeline applied at scale. **Conclusions are drawn here.** |
+
+Stage 1 surfaced that 10 scenes are insufficient (degenerate weather, extreme cross-fold variance), which motivated extracting a 150-scene subset from the full `v1.0-trainval` release for a trustworthy evaluation.
 
 ### The four scene attributes
 
 | # | Attribute | Classes | Source |
 |---|---|---|---|
-| 1 | `time_of_day` | day / night | Scene description |
-| 2 | `weather` | clear / rain | Scene description |
+| 1 | `time_of_day` | day / night | Scene description text |
+| 2 | `weather` | clear / rain | Scene description text |
 | 3 | `vehicle_density` | low / medium / high | Tertile bins on forward-cone vehicle count |
-| 4 | `vru_present` | absent / present | Forward-cone VRU annotation count > 0 |
+| 4 | `vru_present` | absent / present | Forward-cone VRU annotation count ≥ 1 |
+
+> Four **independent** classification tasks on shared images ("multi-attribute"), each solved separately with per-attribute model selection — not a single multi-output model.
 
 ### The five classical model families
 
@@ -47,8 +61,27 @@ This project investigates whether classical machine learning on hand-crafted vis
 - **RQ1.** Can hand-crafted visual features support multi-attribute scene classification on nuScenes front-camera images?
 - **RQ2.** Which scene attributes are most and least learnable from a single front-camera frame?
 - **RQ3.** Among classical model families, which performs most consistently across attributes?
-- **RQ4.** Which feature types (HOG, color histograms, LBP, photometric statistics) are most informative for each attribute?
+- **RQ4.** Which feature types (HOG, colour histograms, LBP, photometric statistics) are most informative per attribute?
 - **RQ5.** How much does hyperparameter tuning and class-weighted training improve over base classifiers?
+
+---
+
+## Key findings
+
+> All headline numbers below are from the **150-scene subset (Stage 2)** — the trustworthy primary experiment. Macro-F1, best tuned model per attribute, mean across 5 folds × 3 seeds.
+
+| Attribute | Best model macro-F1 | Random baseline | Majority baseline | Verdict |
+|---|---|---|---|---|
+| `time_of_day` | **~0.99** | 0.45 | 0.44 | Excellent — photometric signal |
+| `weather` | **~0.90** | 0.45 | 0.44 | Strong — first valid weather result |
+| `vehicle_density` | **~0.51** | 0.33 | 0.17 | Above baseline; structural ceiling |
+| `vru_present` | **~0.63** | 0.50 | 0.35 | Above baseline; structural ceiling |
+
+**All four attributes beat both random and majority baselines** — genuine learning throughout. The pattern is the core finding:
+
+1. **Photometric attributes** (time-of-day, weather) — global brightness/colour/haze cues are captured well by classical holistic features; performance is strong and stable.
+2. **Structural attributes** (vehicle density, VRU presence) — reach a genuine ceiling (~0.5–0.63) because holistic features cannot count objects or localise small/distant VRUs. This ceiling holds across **all five models**, indicating it is a property of the **features**, not the classifier.
+3. **Dataset scale governs evaluation validity.** Stage 1 (10 scenes) produced unreliable estimates — 40–66% of pilot fits scored a perfect macro-F1 of 1.000 (trivially separable tiny folds), and weather was degenerate (rain confined to a single scene). The 150-scene subset enables trustworthy, tight-variance measurement. **Scaling did not raise performance; it revealed the truth.**
 
 ---
 
@@ -57,71 +90,52 @@ This project investigates whether classical machine learning on hand-crafted vis
 ```
 nuscenes-scene-classification-ml/
 ├── data/
-│   ├── v1.0-mini/                          # raw dataset (NOT in repo — see Setup)
-│   ├── metadata/
-│   │   ├── sample_metadata.csv             # per-keyframe metadata (notebook 01)
-│   │   └── sample_metadata_enriched.csv    # + forward-cone object counts
-│   ├── labels/
-│   │   ├── attribute_labels.csv            # one row per keyframe, 4 attributes
-│   │   └── attribute_thresholds.json       # label-generation reproducibility metadata
-│   ├── features/
-│   │   ├── features_full.csv               # ~6,200 features per keyframe
-│   │   ├── feature_metadata.json           # feature-group → column-index map
-│   │   ├── features_pca.csv                # PCA-projected features (fold 0)
-│   │   └── features_lda_<attr>.csv         # LDA-projected features per attribute
-│   └── splits/
-│       ├── fold_assignments.csv            # scene_name → fold mapping
-│       ├── fold_0_train.csv                # k-fold train/test CSVs (5 folds)
-│       ├── fold_0_test.csv
-│       ├── ... (fold_1 through fold_4)
-│       └── kfold_metadata.json             # fold structure metadata
+│   ├── nuscenes/                              # raw dataset (NOT in repo — see Setup)
+│   │   ├── v1.0-mini/                         # Stage 1 (maps, samples, sweeps, metadata)
+│   │   └── v1.0-trainval/                     # Stage 2 (CAM_FRONT subset + metadata)
+│   └── processed/
+│       ├── v1.0-mini/{metadata,labels,features,splits}/
+│       └── v1.0-trainval/{metadata,labels,features,splits}/
 │
 ├── notebooks/
-│   ├── 01_eda.ipynb                        # exploratory data analysis
-│   ├── 02_attribute_labels.ipynb           # generate 4 attribute labels
-│   ├── 03_image_features.ipynb             # HOG + color hist + LBP + photometric
-│   │                                       # + preprocessing doc + synthetic demos
-│   ├── 04_splits.ipynb                     # 5-fold scene-aware CV splits
-│   ├── 05a_dim_reduction.ipynb             # PCA + LDA (fold 0 representative)
-│   ├── 05b_preprocessing_ablation.ipynb    # hist_eq vs CLAHE vs none (fold 0)
-│   ├── 06_classical_models.ipynb           # 5 models × base+tuned × 4 attrs
-│   │                                       # × 3 seeds × 5 folds = 600 fits
-│   ├── 07_feature_ablation.ipynb           # 5 subsets × 5 models × 4 attrs
-│   │                                       # × 3 seeds × 5 folds = 1500 fits
-│   ├── 08a_headline_results.ipynb          # k-fold aggregated tables
-│   ├── 08b_visual_analysis_and_stats.ipynb # confusion matrices, ROC, Wilcoxon tests
-│   └── 08c_deep_analysis.ipynb             # feature importance, error analysis,
-│                                           # RQ summary + scaling roadmap
+│   ├── v1.0-mini/                             # Stage 1 — pilot & methodology development
+│   │   ├── 01_eda.ipynb
+│   │   ├── 02_attribute_labels.ipynb
+│   │   ├── 03_image_features.ipynb
+│   │   ├── 04_splits.ipynb
+│   │   ├── 05a_dim_reduction.ipynb            # PCA / LDA analysis
+│   │   ├── 05b_preprocessing_ablation.ipynb   # contrast-enhancement ablation
+│   │   ├── 06_classical_models.ipynb          # 5 models × base+tuned × 4 attrs × 3 seeds × 5 folds
+│   │   ├── 07_feature_ablation.ipynb          # feature-group ablation
+│   │   ├── 08a_headline_results.ipynb         # pilot headline tables
+│   │   ├── 08b_visual_analysis_and_stats.ipynb
+│   │   └── 08c_deep_analysis.ipynb
+│   │
+│   └── v1.0-trainval/                         # Stage 2 — primary experiment & conclusions
+│       ├── 00a_metadata_eda.ipynb
+│       ├── 00b_scene_selection.ipynb          # select 150 scenes
+│       ├── 00c_extract_images.ipynb           # extract CAM_FRONT subset
+│       ├── 01_attribute_labels.ipynb
+│       ├── 02_image_features.ipynb
+│       ├── 03_splits.ipynb                     # 5-fold scene-aware CV
+│       ├── 04_classical_models.ipynb           # 600 fits (5×4×2×3×5)
+│       ├── 05_compare_mini_vs_subset.ipynb     # cross-stage comparison
+│       ├── 06a_headline_results.ipynb          # primary headline tables
+│       ├── 06b_visual_analysis_and_stats.ipynb # confusion matrices, ROC, stats
+│       └── 06c_deep_analysis.ipynb             # feature importance, error analysis, conclusions
 │
 ├── models/
-│   └── fold_<k>/<attr>/                    # trained .pkl checkpoints per fold
+│   ├── v1.0-mini/fold_<k>/<attr>/             # pilot model checkpoints
+│   └── v1.0-trainval/<attr>/                  # 600 model checkpoints (NOT in repo — see Setup)
 │
 ├── results/
-│   ├── metrics/
-│   │   ├── all_metrics.csv                 # 570 test-split rows (k-fold)
-│   │   ├── baseline_metrics.csv            # random + majority-class baselines
-│   │   ├── skipped_combos.json             # (fold, attr) combos skipped
-│   │   ├── ablation_metrics.csv            # 1425 feature ablation rows
-│   │   ├── aggregated_metrics.csv          # mean ± std across folds × seeds
-│   │   ├── dim_reduction_metrics.csv       # PCA/LDA comparison
-│   │   └── preprocessing_ablation_metrics.csv
-│   ├── predictions/
-│   │   └── predictions_test.csv            # 44,910 per-sample predictions
-│   ├── final/
-│   │   ├── headline_table.csv
-│   │   ├── all_results_matrix.csv
-│   │   ├── top3_per_attribute.csv
-│   │   ├── recall_precision_best.csv
-│   │   ├── statistical_tests.csv
-│   │   ├── tuning_significance.csv
-│   │   ├── feature_importance_rf.csv
-│   │   ├── feature_importance_lr.csv
-│   │   ├── error_analysis.csv
-│   │   ├── final_summary.json
-│   │   └── scaling_roadmap.json            # exact steps to scale to v1.0-trainval
-│   └── figures/                            # all generated plots
-│ 
+│   ├── v1.0-mini/{metrics,predictions,figures,final}/
+│   ├── v1.0-trainval/{metrics,predictions,figures,final}/
+│   └── comparison/{metrics,figures,final}/    # cross-stage comparison outputs
+│
 ├── requirements.txt
+├── folder_structure.txt
+├── LICENSE
 └── README.md
 ```
 
@@ -130,130 +144,103 @@ nuscenes-scene-classification-ml/
 ## Setup
 
 ### Prerequisites
-
-- Python 3.10–3.12 (tested on Python 3.12.10)
-- ~5 GB disk space for v1.0-mini, ~35 GB for v1.0-trainval (camera-only)
-- CPU only — no GPU needed for classical ML
-- Modern multi-core CPU recommended (8+ cores ideal for grid search)
+- Python 3.12.10 (tested)
+- CPU only — no GPU required for classical ML
+- Multi-core CPU recommended (grid search benefits from parallelism)
+- Disk: ~4 GB for Stage 1 (mini); ~2 GB for Stage 2 reproduction (metadata + extracted subset)
 
 ### Installation
-
 ```bash
-# Clone and enter
 git clone https://github.com/LeeMing988/nuscenes-scene-classification-ml.git
 cd nuscenes-scene-classification-ml
 
-# Create virtual environment
 python -m venv .venv
-source .venv/bin/activate           # Linux/macOS
-.venv\Scripts\activate              # Windows
+source .venv/bin/activate          # Linux/macOS
+.venv\Scripts\activate             # Windows
 
-# Install dependencies
 pip install -r requirements.txt
 ```
 
 ### Dataset
-The nuScenes dataset must be obtained directly from the official nuScenes website due to licensing restrictions. This repository does not redistribute any part of the dataset. Users must register for a free account, agree to the dataset terms of use, and download the `v1.0-mini` release before running the notebooks.
 
-The nuScenes dataset is **not redistributed** in this repository. Download separately:
+The nuScenes dataset is **not redistributed** here (licensing). Obtain it from the official source.
 
-1. Create a free account at [nuscenes.org](https://www.nuscenes.org/nuscenes#download)
-2. Download **`v1.0-mini`** (~4 GB)
-3. Extract into `data/v1.0-mini/` so the structure looks like:
+**Stage 1 — v1.0-mini (full, ~4 GB):**
+1. Register at [nuscenes.org](https://www.nuscenes.org/nuscenes#download), accept the terms.
+2. Download **`v1.0-mini`** and extract to `data/nuscenes/v1.0-mini/` (contains `maps/`, `samples/`, `sweeps/`, metadata).
 
-```
-data/v1.0-mini/
-├── maps/
-├── samples/
-├── sweeps/
-└── v1.0-mini/         # metadata JSONs
-```
+**Stage 2 — 150-scene subset (no 380 GB download needed):**
+The full `v1.0-trainval` blobs are ~380 GB. To reproduce Stage 2 **you do not need them** — only the metadata and the extracted front-camera subset:
+1. From official nuScenes, download **`v1.0-trainval` metadata only** (the small `_meta` archive, a few hundred MB) → `data/nuscenes/v1.0-trainval/v1.0-trainval_meta/`.
+2. Download the **pre-extracted CAM_FRONT subset** (~1 GB) → `[google-drive-link-for-subset]` → place at `data/nuscenes/v1.0-trainval/samples/CAM_FRONT/`.
+
+> To regenerate the subset from scratch instead, download the full `v1.0-trainval` blobs and run `notebooks/v1.0-trainval/00a → 00b → 00c`.
 
 ---
 
 ## How to run
 
-Execute notebooks **in this exact order**. Each notebook produces outputs consumed by the next.
+> **You do not need to retrain to reproduce the results.** All metrics, predictions, and figures are committed under `results/`. The analysis notebooks (`05`, `06a–c`, `08a–c`) read these saved outputs and regenerate every table and figure in minutes. Full model training (~38 h for Stage 2) is only needed to rebuild the models themselves.
 
-| # | Notebook | Runtime (v1.0-mini) | Key output |
-|---|---|---|---|
-| 01 | `01_eda.ipynb` | ~1 min | Class-distribution plots |
-| 02 | `02_attribute_labels.ipynb` | ~30 sec | `attribute_labels.csv` |
-| 03 | `03_image_features.ipynb` | ~5-10 min | `features_full.csv` (~6,200 dims) |
-| 04 | `04_splits.ipynb` | ~10 sec | `fold_0_train.csv` … `fold_4_test.csv` |
-| 05a | `05a_dim_reduction.ipynb` | ~1-2 min | PCA/LDA analysis (fold 0) |
-| 05b | `05b_preprocessing_ablation.ipynb` | ~5-8 min | Preprocessing comparison (fold 0) |
-| 06 | `06_classical_models.ipynb` | **~1.5-3 hours** | 600 model fits, all metrics |
-| 07 | `07_feature_ablation.ipynb` | **~1-2 hours** | 1500 ablation fits |
-| 08a | `08a_headline_results.ipynb` | ~30 sec | Headline tables (Table 7/8/9) |
-| 08b | `08b_visual_analysis_and_stats.ipynb` | ~1 min | Confusion matrices, ROC, stat tests |
-| 08c | `08c_deep_analysis.ipynb` | ~1 min | Feature importance, error analysis, RQ summary |
+### Stage 1 — v1.0-mini (pilot)
+Run in order: `01 → 02 → 03 → 04 → 05a → 05b → 06 → 07 → 08a → 08b → 08c`.
 
-> **Total pipeline runtime:** ~3-5 hours on a modern multi-core CPU (mostly notebooks 06 and 07).
+### Stage 2 — v1.0-trainval (primary)
+Run in order: `00a → 00b → 00c → 01 → 02 → 03 → 04 → 05 → 06a → 06b → 06c`.
 
-> **Seeded for reproducibility:** `SEED_LIST = [42, 7, 123]`, `SPLIT_SEED = 42`.
+| Notebook | Approx. runtime | Note |
+|---|---|---|
+| feature extraction (`03`/`02`) | minutes | HOG+colour+LBP+photometric → 6,216-dim vectors |
+| `04_classical_models` (Stage 2) | **~several hours** | 600 fits; SVM-RBF tuned is the bottleneck. **Skip if using committed results.** |
+| `05`, `06a–c` | minutes | read saved CSVs/models; regenerate all tables & figures |
+
+> **Seeds for reproducibility:** `SEED_LIST = [42, 7, 123]`, `SPLIT_SEED = 42`.
 
 ---
 
 ## Methodology highlights
 
-### 5-Fold Scene-Aware Cross-Validation (key methodological choice)
+### 5-fold scene-aware cross-validation
+Adjacent keyframes within a scene are near-duplicates; splitting them across train/test would leak information. Whole **scenes** are assigned to folds (stratified on `time_of_day`), so no scene spans the train/test boundary. Every keyframe is evaluated exactly once across the 5 folds. Single-class (fold, attribute) combinations are skipped and documented in `skipped_combos.json`.
 
-On v1.0-mini (10 scenes, 404 keyframes), a single train/val/test split yields a test set of only 1-2 scenes (~80 keyframes). With such a small test set, minority classes (rain, high vehicle density) can be entirely absent from the test split — making macro-F1 meaningless for those classes.
-
-Following Demšar (2006), we adopt **5-fold scene-aware cross-validation**:
-- Every scene appears in test exactly once across the 5 folds
-- All 404 keyframes are evaluated; no scene leakage (verified explicitly)
-- Per-fold metrics aggregate to mean ± std across folds × 3 seeds = **15 observations per (model, attribute)**
-- Some (fold, attribute) combinations are skipped if the training set has only one class for that attribute (documented in `skipped_combos.json`)
-
-### Other methodological choices
-
-- **Scene-aware partitioning:** adjacent keyframes from the same scene are kept together in train or test, preventing near-duplicate leakage
-- **Forward-cone filter:** vehicle and VRU counts use a ±30°, 50 m cone matching ADAS front-camera field of view
-- **Train-only scaling:** `StandardScaler` fitted on training split only — no test leakage
-- **Trivial baselines:** random and majority-class baselines anchored to every model comparison
-- **Base vs Tuned:** all 5 models trained with sklearn defaults (base) and grid-searched + class-weighted (tuned)
-- **Defensive grid-search fallback:** if a class has too few samples for inner 3-fold CV, the model falls back to base estimator (documented per run)
-- **Statistical tests:** paired Wilcoxon signed-rank tests with Cohen's d effect sizes
+### Other choices
+- **Forward-cone filter:** vehicle/VRU counts use a ±30°, 50 m cone matching an ADAS front-camera field of view.
+- **Train-only scaling:** `StandardScaler` fitted on the training fold only — no test leakage.
+- **Class imbalance:** handled at the **algorithm level** (`class_weight='balanced'`), chosen over data-level resampling (SMOTE) — resampling cannot manufacture minority-class diversity from a single source scene.
+- **Trivial baselines:** random and majority-class baselines anchor every comparison.
+- **Base vs tuned:** all five models run with defaults (base) and grid-searched + class-weighted (tuned), inner 3-fold CV.
+- **Within-stage significance:** paired Wilcoxon signed-rank tests with Cohen's d (model/version comparison). Cross-stage comparison is reported descriptively (different datasets → unpaired).
 
 ---
 
-## Experimental scale
+## Experimental scale (verified)
 
-| Component | Count |
-|---|---|
-| Model fits (notebook 06) | 570 completed (600 expected, 30 skipped) |
-| Baseline computations | 114 |
-| Feature ablation fits (notebook 07) | 1,425 completed (1,500 expected, 75 skipped) |
-| Individual test predictions saved | 44,910 |
-| Scene leakage detected | 0 |
+| Component | Stage 1 (mini) | Stage 2 (subset) |
+|---|---|---|
+| Scenes / keyframes | 10 / 404 | 150 / 6,021 |
+| Model fits (`all_metrics.csv` rows) | 1,140 | 600 |
+| Skipped (fold, attribute) combos | 1 (weather, fold 0) | 0 |
+| Test predictions saved | 46,050 | 722,520 |
+| Scene leakage detected | 0 | 0 |
+
+---
+
+## Reproduction tiers
+
+| Goal | What you need | Time |
+|---|---|---|
+| Regenerate all tables & figures | committed `results/` + run `05`/`06a–c` | minutes |
+| Inspect / re-predict with trained models | best-per-attribute models `[google-drive-link-models]` | minutes |
+| Rebuild models from scratch | metadata + image subset + run `04` | ~hours |
 
 ---
 
 ## Key limitations
 
-- **v1.0-mini scale:** only 10 scenes limits per-class statistical power and class coverage per fold
-- **Rain concentration:** all rain frames are in 1-2 scenes; fold where rain scene is in test has no rain in train (documented, handled by skip-and-document)
-- **Single-frame restriction:** no temporal context across frames
-- **Classical features:** HOG/LBP/color histograms cannot perform object counting — explains low vehicle_density and vru_present performance
-- **Tuning bundled with class-weighting:** mean tuning gain = −0.019 overall; class-weighting overcorrection on imbalanced attributes is the likely cause
-
----
-
-## Scaling to v1.0-trainval
-
-The pipeline is designed for a one-variable scale-up. See `results/final/scaling_roadmap.json` for the complete parameter-change manifest. Summary:
-
-| Notebook | Change |
-|---|---|
-| 01, 02, 03 | `DATASET_VERSION = 'v1.0-trainval'` |
-| 04 | Switch to single 70/15/15 stratified split (k-fold optional at scale) |
-| 06 | Reduce grid search complexity (RandomizedSearchCV or smaller grids) |
-| 07 | Reduce ablation matrix (2 best models only) |
-| 08a–08c | Aggregation over seeds only (no fold dimension) |
-
-Expected improvements: weather and vehicle_density become reliably evaluable; all class distributions stabilise; confidence intervals tighten significantly.
+- **Stage 1 scale:** 10 scenes are insufficient for reliable evaluation — pilot scores are inflated/unstable (single-scene rain makes weather degenerate; structural attributes show extreme cross-fold variance). This motivated Stage 2 and is itself a reported finding.
+- **Structural-attribute ceiling:** HOG/LBP/colour features cannot count objects or localise small VRUs, capping vehicle-density and VRU-presence performance regardless of model or scale.
+- **Single-frame restriction:** no temporal context across frames.
+- **Compute:** SVM-RBF with probability calibration is the training bottleneck (~minutes per tuned fit at scale).
 
 ---
 
@@ -261,32 +248,21 @@ Expected improvements: weather and vehicle_density become reliably evaluable; al
 
 | Item | Where |
 |---|---|
-| Random seeds | `SEED_LIST = [42, 7, 123]`, `SPLIT_SEED = 42` in each notebook |
-| Hyperparameters | `attribute_thresholds.json`, `feature_metadata.json` |
-| Fold assignments | `data/splits/kfold_metadata.json` |
-| Trained models | `models/fold_<k>/<attr>/` |
-| Skipped combos | `results/metrics/skipped_combos.json` |
+| Random seeds | `SEED_LIST = [42, 7, 123]`, `SPLIT_SEED = 42` (each notebook) |
+| Label thresholds | `data/processed/<version>/labels/attribute_thresholds.json` |
+| Feature spec | `data/processed/<version>/features/feature_metadata.json` |
+| Fold assignments | `data/processed/<version>/splits/kfold_metadata.json` |
+| Saved metrics & predictions | `results/<version>/metrics/`, `results/<version>/predictions/` |
 | Library versions | `requirements.txt` |
-
-```bash
-# Full reproduction from scratch:
-jupyter notebook
-# Run notebooks 01 → 02 → 03 → 04 → 05a → 05b → 06 → 07 → 08a → 08b → 08c
-```
 
 ---
 
 ## License
-
-This is an academic project. Code is provided as-is for educational purposes.
-The nuScenes dataset is licensed separately — see [nuscenes.org/terms-of-use](https://www.nuscenes.org/terms-of-use).
+Academic project, provided as-is for educational purposes. The nuScenes dataset is licensed separately — see [nuscenes.org/terms-of-use](https://www.nuscenes.org/terms-of-use).
 
 ---
 
 ## Citation
-
-If you reference this work, please cite:
-
 ```bibtex
 @misc{yeoh2026nuscenes,
   author = {Yeoh, Lee Ming},
@@ -301,6 +277,5 @@ If you reference this work, please cite:
 ---
 
 ## Acknowledgements
-
 - nuScenes dataset by Motional (formerly nuTonomy).
 - Course staff at APU for guidance and feedback.
