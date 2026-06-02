@@ -1,0 +1,5 @@
+attribute,best_model,accuracy,macro_f1,macro_precision,macro_recall,n_folds_evaluated
+time_of_day,RF,0.959 ± 0.077,0.925 ± 0.143,0.937 ± 0.133,0.925 ± 0.142,5
+weather,SVM,0.982 ± 0.033,0.870 ± 0.235,0.875 ± 0.226,0.866 ± 0.243,4
+vehicle_density,LogReg,0.297 ± 0.132,0.277 ± 0.108,0.420 ± 0.105,0.406 ± 0.064,5
+vru_present,LogReg,0.560 ± 0.218,0.429 ± 0.098,0.472 ± 0.100,0.464 ± 0.090,5

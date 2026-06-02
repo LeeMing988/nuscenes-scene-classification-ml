@@ -1,0 +1,27 @@
+{
+  "dataset_version": "v1.0-trainval",
+  "split_method": "5-fold scene-aware CV",
+  "summary_generated": "2026-05-25 01:10:54",
+  "n_fits": 600,
+  "n_predictions": 722520,
+  "n_skipped_combos": 0,
+  "skipped_combos": [],
+  "best_per_attribute": {
+    "time_of_day": {
+      "model": "XGBoost",
+      "macro_f1": 0.993
+    },
+    "vehicle_density": {
+      "model": "SVM_RBF",
+      "macro_f1": 0.511
+    },
+    "vru_present": {
+      "model": "SVM_RBF",
+      "macro_f1": 0.628
+    },
+    "weather": {
+      "model": "RandomForest",
+      "macro_f1": 0.901
+    }
+  }
+}

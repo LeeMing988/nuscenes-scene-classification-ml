@@ -1,0 +1,13 @@
+attribute,rank,model,macro_f1
+time_of_day,1,XGB,0.993
+time_of_day,2,LogReg,0.993
+time_of_day,3,SVM,0.978
+weather,1,RF,0.901
+weather,2,XGB,0.896
+weather,3,SVM,0.876
+vehicle_density,1,SVM,0.511
+vehicle_density,2,XGB,0.506
+vehicle_density,3,MLP,0.489
+vru_present,1,SVM,0.628
+vru_present,2,XGB,0.617
+vru_present,3,MLP,0.615

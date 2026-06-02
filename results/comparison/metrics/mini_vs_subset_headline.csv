@@ -1,0 +1,5 @@
+Attribute,Mini best,Mini F1,Mini std,Subset best,Subset F1,Subset std,Delta F1,Rel change %
+time_of_day,RF,0.962,0.106,XGB,0.993,0.012,0.031,3.2
+vehicle_density,LogReg,0.639,0.375,SVM,0.511,0.022,-0.127,-20.0
+vru_present,LogReg,0.714,0.298,SVM,0.628,0.033,-0.086,-12.1
+weather,SVM,0.935,0.175,RF,0.901,0.068,-0.034,-3.7

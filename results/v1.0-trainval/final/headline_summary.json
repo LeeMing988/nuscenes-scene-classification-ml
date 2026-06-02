@@ -1,0 +1,40 @@
+{
+  "dataset_version": "v1.0-trainval",
+  "best_per_attribute": {
+    "time_of_day": {
+      "model": "XGB",
+      "macro_f1": 0.993,
+      "std": 0.012,
+      "beats_random": true,
+      "beats_majority": true
+    },
+    "weather": {
+      "model": "RF",
+      "macro_f1": 0.901,
+      "std": 0.068,
+      "beats_random": true,
+      "beats_majority": true
+    },
+    "vehicle_density": {
+      "model": "SVM",
+      "macro_f1": 0.511,
+      "std": 0.022,
+      "beats_random": true,
+      "beats_majority": true
+    },
+    "vru_present": {
+      "model": "SVM",
+      "macro_f1": 0.628,
+      "std": 0.033,
+      "beats_random": true,
+      "beats_majority": true
+    }
+  },
+  "model_ranking": {
+    "XGB": 0.753,
+    "SVM": 0.748,
+    "LogReg": 0.735,
+    "MLP": 0.731,
+    "RF": 0.729
+  }
+}

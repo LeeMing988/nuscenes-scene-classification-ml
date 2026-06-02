@@ -1,0 +1,10 @@
+attribute,model,class,precision,recall
+time_of_day,XGB,day,0.995,0.999
+time_of_day,XGB,night,0.997,0.982
+weather,RF,clear,0.945,0.987
+weather,RF,rain,0.936,0.77
+vehicle_density,SVM,low,0.568,0.628
+vehicle_density,SVM,medium,0.431,0.423
+vehicle_density,SVM,high,0.574,0.506
+vru_present,SVM,absent,0.642,0.711
+vru_present,SVM,present,0.626,0.55

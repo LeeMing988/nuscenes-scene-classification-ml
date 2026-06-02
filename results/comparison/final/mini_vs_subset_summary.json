@@ -1,0 +1,65 @@
+{
+  "comparison_date": "2026-05-25 01:01:38",
+  "stage1_source": "CSV (v1.0-mini re-run on this machine)",
+  "protocol": "Both stages: 5-fold scene-aware CV, inner 3-fold tuning, seeds [42,7,123]",
+  "stage1": {
+    "dataset": "v1.0-mini (10 scenes, ~404 keyframes)",
+    "best_per_attribute": {
+      "time_of_day": {
+        "model": "RF",
+        "macro_f1": 0.962
+      },
+      "vehicle_density": {
+        "model": "LogReg",
+        "macro_f1": 0.639
+      },
+      "vru_present": {
+        "model": "LogReg",
+        "macro_f1": 0.714
+      },
+      "weather": {
+        "model": "SVM",
+        "macro_f1": 0.935
+      }
+    }
+  },
+  "stage2": {
+    "dataset": "v1.0-trainval 150-scene subset (~6,021 keyframes)",
+    "best_per_attribute": {
+      "time_of_day": {
+        "model": "XGB",
+        "macro_f1": 0.993
+      },
+      "vehicle_density": {
+        "model": "SVM",
+        "macro_f1": 0.511
+      },
+      "vru_present": {
+        "model": "SVM",
+        "macro_f1": 0.628
+      },
+      "weather": {
+        "model": "RF",
+        "macro_f1": 0.901
+      }
+    }
+  },
+  "deltas": {
+    "time_of_day": {
+      "delta_macro_f1": 0.031,
+      "relative_change_%": 3.2
+    },
+    "vehicle_density": {
+      "delta_macro_f1": -0.127,
+      "relative_change_%": -20.0
+    },
+    "vru_present": {
+      "delta_macro_f1": -0.086,
+      "relative_change_%": -12.1
+    },
+    "weather": {
+      "delta_macro_f1": -0.034,
+      "relative_change_%": -3.7
+    }
+  }
+}

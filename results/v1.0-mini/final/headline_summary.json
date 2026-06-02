@@ -1,0 +1,34 @@
+{
+  "dataset_version": "v1.0-mini",
+  "methodology": "5-fold scene-aware cross-validation (Dem\u0161ar 2006)",
+  "attributes": [
+    "time_of_day",
+    "weather",
+    "vehicle_density",
+    "vru_present"
+  ],
+  "n_skipped_combos": 1,
+  "skipped_combos": [
+    {
+      "fold": 0,
+      "attribute": "weather",
+      "reason": "train_single_class",
+      "n_train_classes": 1,
+      "n_test_classes": 2
+    }
+  ],
+  "best_model_per_attribute": {
+    "time_of_day": "RF",
+    "weather": "SVM",
+    "vehicle_density": "LogReg",
+    "vru_present": "LogReg"
+  },
+  "best_macro_f1_per_attribute": {
+    "time_of_day": "0.925 \u00b1 0.143",
+    "weather": "0.870 \u00b1 0.235",
+    "vehicle_density": "0.277 \u00b1 0.108",
+    "vru_present": "0.429 \u00b1 0.098"
+  },
+  "best_overall_average_model": "RF",
+  "best_overall_average_macro_f1": 0.551
+}

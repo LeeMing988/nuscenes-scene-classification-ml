@@ -1,0 +1,5 @@
+attribute,best_model,error_rate,top_confusion
+time_of_day,XGBoost,0.004,night->day (n=22)
+weather,RandomForest,0.057,rain->clear (n=278)
+vehicle_density,SVM_RBF,0.481,medium->low (n=838)
+vru_present,SVM_RBF,0.364,present->absent (n=1269)
