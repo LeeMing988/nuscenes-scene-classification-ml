@@ -1,0 +1,66 @@
+{
+  "dataset_version": "v1.0-trainval",
+  "n_scenes_total": 850,
+  "n_keyframes_total": 34149,
+  "n_scenes_night": 99,
+  "n_scenes_rain": 165,
+  "joint_distribution_scenes": {
+    "day_clear": 602,
+    "day_rain": 149,
+    "night_clear": 83,
+    "night_rain": 16
+  },
+  "locations": {
+    "boston-seaport": 467,
+    "singapore-onenorth": 183,
+    "singapore-queenstown": 115,
+    "singapore-hollandvillage": 85
+  },
+  "subset_feasibility": {
+    "subset_size": 150,
+    "all_strata_feasible": true,
+    "target_strata": {
+      "day_clear": 90,
+      "day_rain": 20,
+      "night_clear": 30,
+      "night_rain": 10
+    },
+    "adjusted_allocation": {
+      "day_clear": 90,
+      "day_rain": 20,
+      "night_clear": 30,
+      "night_rain": 10
+    },
+    "adjusted_total_scenes": 150,
+    "per_stratum_details": [
+      {
+        "time_of_day": "day",
+        "weather": "clear",
+        "target": 90,
+        "available": 602,
+        "feasible": true
+      },
+      {
+        "time_of_day": "day",
+        "weather": "rain",
+        "target": 20,
+        "available": 149,
+        "feasible": true
+      },
+      {
+        "time_of_day": "night",
+        "weather": "clear",
+        "target": 30,
+        "available": 83,
+        "feasible": true
+      },
+      {
+        "time_of_day": "night",
+        "weather": "rain",
+        "target": 10,
+        "available": 16,
+        "feasible": true
+      }
+    ]
+  }
+}

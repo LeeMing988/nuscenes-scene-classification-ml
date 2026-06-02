@@ -1,0 +1,80 @@
+{
+  "dataset_version": "v1.0-mini",
+  "methodology": "5-fold scene-aware cross-validation (Dem\u0161ar 2006)",
+  "attributes": [
+    "time_of_day",
+    "weather",
+    "vehicle_density",
+    "vru_present"
+  ],
+  "models_compared": [
+    "LogisticRegression",
+    "SVM_RBF",
+    "RandomForest",
+    "XGBoost",
+    "MLP"
+  ],
+  "n_seeds": 3,
+  "n_folds": 5,
+  "rq1_feasibility": {
+    "all_above_random_baseline": false,
+    "n_attributes_above_random": 2,
+    "n_attributes_below_random": 2,
+    "attributes_above_random": [
+      "time_of_day",
+      "weather"
+    ],
+    "attributes_below_random": [
+      "vehicle_density",
+      "vru_present"
+    ],
+    "best_macro_f1_per_attribute": {
+      "time_of_day": 0.925,
+      "weather": 0.87,
+      "vehicle_density": 0.277,
+      "vru_present": 0.429
+    }
+  },
+  "rq2_difficulty": {
+    "easiest_attribute": "time_of_day",
+    "hardest_attribute": "vehicle_density"
+  },
+  "rq3_model_ranking": {
+    "best_average_model": "RF",
+    "best_average_macro_f1": 0.551,
+    "note": "Best average across all 4 attributes; does not imply this model wins each attribute individually."
+  },
+  "rq4_feature_affinity": {
+    "time_of_day": {
+      "champion_single_group": "photo_only",
+      "macro_f1": 0.883
+    },
+    "weather": {
+      "champion_single_group": "photo_only",
+      "macro_f1": 0.78
+    },
+    "vehicle_density": {
+      "champion_single_group": "hog_only",
+      "macro_f1": 0.23
+    },
+    "vru_present": {
+      "champion_single_group": "photo_only",
+      "macro_f1": 0.447
+    }
+  },
+  "rq5_tuning_impact": {
+    "mean_gain_macro_f1": 0.0,
+    "sig_at_0.05": [
+      "vehicle_density",
+      "vru_present"
+    ]
+  },
+  "best_model_per_attribute": {
+    "time_of_day": "RF",
+    "weather": "SVM",
+    "vehicle_density": "LogReg",
+    "vru_present": "LogReg"
+  },
+  "scaling_roadmap_available": true,
+  "scaling_roadmap_file": "results/final/scaling_roadmap.json"
+}

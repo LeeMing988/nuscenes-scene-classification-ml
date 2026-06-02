@@ -1,0 +1,78 @@
+{
+  "overview": {
+    "current_dataset": "v1.0-mini",
+    "current_scenes": 10,
+    "current_keyframes": 404,
+    "target_dataset": "v1.0-trainval",
+    "target_scenes": 850,
+    "target_keyframes": "~34,000",
+    "storage_required": "~30-40 GB (camera-only subset)",
+    "estimated_pipeline_runtime": "~8-12 hours total"
+  },
+  "parameter_changes_per_notebook": {
+    "01_eda": {
+      "DATASET_VERSION": "\"v1.0-trainval\"  # was \"v1.0-mini\"",
+      "no_other_changes": true
+    },
+    "02_attribute_labels": {
+      "DATASET_VERSION": "\"v1.0-trainval\"",
+      "no_other_changes": true,
+      "note": "Same keyword matching applies; should produce better class balance."
+    },
+    "03_image_features": {
+      "DATASET_VERSION": "\"v1.0-trainval\"",
+      "expected_runtime": "~2-4 hours (vs ~2-5 min on mini)",
+      "memory_consideration": "Features array becomes ~34,000 \u00d7 6,216 = ~210M floats = ~800 MB"
+    },
+    "04_splits": {
+      "CRITICAL_CHANGE": "Switch from k-fold to single 70/15/15 stratified split",
+      "reason": "Law of large numbers: with 850 scenes, single split achieves stable class distribution",
+      "code_change": "Set N_FOLDS = 1 (or revert to original single-split splitter)",
+      "class_balance": "Expected: all classes well-represented in train/val/test"
+    },
+    "05a_dim_reduction": {
+      "no_changes": true,
+      "note": "Analysis on representative fold still applies"
+    },
+    "05b_preprocessing_ablation": {
+      "no_changes": true,
+      "note": "May run slower due to 30\u00d7 more images; consider sampling 5,000 images"
+    },
+    "06_classical_models": {
+      "CRITICAL_CHANGE_1": "Reduce grid search complexity OR use random search",
+      "reason": "SVM with 34,000 samples \u00d7 full grid = prohibitively slow",
+      "option_A": "Use sklearn RandomizedSearchCV with n_iter=20",
+      "option_B": "Subsample to 10,000 for grid search, retrain best on full data",
+      "option_C": "Drop grids further: LR={C:[1,10]}, SVM=defaults, RF={n_est:[500]}, XGB={n_est:[500]}",
+      "expected_runtime": "~3-5 hours (vs ~1.5-3 hr on mini k-fold)"
+    },
+    "07_feature_ablation": {
+      "CRITICAL_CHANGE": "Reduce ablation matrix",
+      "reason": "5 subsets \u00d7 5 models \u00d7 3 seeds \u00d7 4 attrs \u00d7 34k samples = expensive",
+      "recommendation": "Drop to 2 best models (winners from notebook 06), single seed",
+      "expected_runtime": "~2-3 hours"
+    },
+    "08a_headline_results": {
+      "CRITICAL_CHANGE": "Adjust aggregation \u2014 no fold column to average across",
+      "code_change": "Aggregation is now across seeds only (3 obs per metric)"
+    },
+    "08b_visual_analysis_and_stats": {
+      "CRITICAL_CHANGE": "Statistical tests use seed-only pairs",
+      "code_change": "Paired tests now have 3-15 obs depending on grouping (was 75 with k-fold)",
+      "note": "Lower paired-test power but larger absolute sample size offsets this"
+    },
+    "08c_deep_analysis": {
+      "CRITICAL_CHANGE": "Feature importance run on full training set, not representative fold",
+      "note": "Single-split means no \"representative fold\" concept"
+    }
+  },
+  "methodology_section_to_update": "When scaling to v1.0-trainval, k-fold CV is methodologically optional. Dem\u0161ar (2006) recommends k-fold for small datasets where single-split variability is high. With ~850 scenes, single 70/15/15 split achieves stable class distributions and obviates the need for fold averaging.",
+  "why_k_fold_on_mini": "On v1.0-mini (10 scenes), a single train/val/test split yields a test set of only 1-2 scenes (~80 keyframes), insufficient for meaningful per-class metrics on minority classes (rain, high vehicle density). K-fold ensures every scene contributes to evaluation exactly once.",
+  "expected_improvements_from_scaling": [
+    "weather macro-F1 evaluable on all folds (no rain-class absence problem)",
+    "vehicle_density `high` class properly represented (not just 1 sample)",
+    "Tighter confidence intervals due to ~85\u00d7 more samples",
+    "Statistical tests with higher power per single split",
+    "Generalisation claims become defensible"
+  ]
+}

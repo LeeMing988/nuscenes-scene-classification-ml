@@ -1,0 +1,17 @@
+attribute,model_a,model_b,mean_a,mean_b,mean_diff,cohens_d,wilcoxon_p,sig_at_0.05
+time_of_day,RF (winner),LogReg,0.925,0.73,0.195,0.775,0.0023,***
+time_of_day,RF (winner),SVM,0.925,0.629,0.295,0.998,0.0086,***
+time_of_day,RF (winner),XGB,0.925,0.87,0.055,0.2,0.8583,
+time_of_day,RF (winner),MLP,0.925,0.62,0.305,1.11,0.0019,***
+weather,SVM (winner),LogReg,0.87,0.583,0.288,1.161,0.0039,***
+weather,SVM (winner),RF,0.87,0.853,0.018,0.55,0.25,
+weather,SVM (winner),XGB,0.87,0.587,0.283,1.133,0.0039,***
+weather,SVM (winner),MLP,0.87,0.389,0.481,2.169,0.0005,***
+vehicle_density,LogReg (winner),SVM,0.277,0.189,0.088,0.97,0.0021,***
+vehicle_density,LogReg (winner),RF,0.277,0.162,0.115,1.782,0.0001,***
+vehicle_density,LogReg (winner),XGB,0.277,0.238,0.039,0.346,0.46,
+vehicle_density,LogReg (winner),MLP,0.277,0.24,0.037,0.341,0.2524,
+vru_present,LogReg (winner),SVM,0.429,0.333,0.096,0.844,0.0026,***
+vru_present,LogReg (winner),RF,0.429,0.325,0.104,0.9,0.0012,***
+vru_present,LogReg (winner),XGB,0.429,0.345,0.083,0.848,0.0076,***
+vru_present,LogReg (winner),MLP,0.429,0.36,0.069,1.019,0.0026,***

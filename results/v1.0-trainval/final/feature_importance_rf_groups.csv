@@ -1,0 +1,5 @@
+attribute,hog,color,lbp,photo
+time_of_day,0.3368,0.4109,0.106,0.1463
+vehicle_density,0.9291,0.0356,0.0295,0.0058
+vru_present,0.9151,0.0547,0.026,0.0042
+weather,0.7106,0.0469,0.23,0.0125

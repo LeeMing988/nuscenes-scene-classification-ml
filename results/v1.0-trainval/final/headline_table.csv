@@ -1,0 +1,5 @@
+attribute,best_model,macro_f1,std,random,majority,beats_random,beats_majority
+time_of_day,XGB,0.993,0.012,0.452,0.444,True,True
+weather,RF,0.901,0.068,0.446,0.443,True,True
+vehicle_density,SVM,0.511,0.022,0.33,0.168,True,True
+vru_present,SVM,0.628,0.033,0.498,0.346,True,True

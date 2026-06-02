@@ -1,0 +1,35 @@
+{
+  "dataset_version": "v1.0-trainval",
+  "feature_group_dominant": {
+    "time_of_day": "color",
+    "vehicle_density": "hog",
+    "vru_present": "hog",
+    "weather": "hog"
+  },
+  "error_analysis": [
+    {
+      "attribute": "time_of_day",
+      "best_model": "XGBoost",
+      "error_rate": 0.004,
+      "top_confusion": "night->day (n=22)"
+    },
+    {
+      "attribute": "weather",
+      "best_model": "RandomForest",
+      "error_rate": 0.057,
+      "top_confusion": "rain->clear (n=278)"
+    },
+    {
+      "attribute": "vehicle_density",
+      "best_model": "SVM_RBF",
+      "error_rate": 0.481,
+      "top_confusion": "medium->low (n=838)"
+    },
+    {
+      "attribute": "vru_present",
+      "best_model": "SVM_RBF",
+      "error_rate": 0.364,
+      "top_confusion": "present->absent (n=1269)"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+attribute,n_pairs,mean_macro_f1_base,mean_macro_f1_tuned,mean_diff,cohens_d,wilcoxon_p,paired_t_p,sig_at_0.05
+time_of_day,75,0.745,0.755,0.01,0.136,0.3612,0.2414,
+weather,60,0.631,0.656,0.026,0.227,0.3357,0.0843,
+vehicle_density,75,0.236,0.221,-0.015,-0.279,0.028,0.0183,***
+vru_present,75,0.378,0.358,-0.02,-0.385,0.0023,0.0013,***

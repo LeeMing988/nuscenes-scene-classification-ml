@@ -1,0 +1,7 @@
+[
+  {
+    "fold": 0,
+    "attribute": "weather",
+    "reason": "train_single_class"
+  }
+]
