@@ -1,0 +1,5 @@
+attribute,N_blocks,k_models,friedman_chi2,friedman_p,CD_alpha05,best_model,best_rank,n_sig_pairs
+time_of_day,15,5,25.6912,3.652105580351229e-05,1.575,XGBoost,1.7,4
+weather,15,5,28.4267,1.0220029394613566e-05,1.575,RandomForest,1.667,4
+vehicle_density,15,5,31.6267,2.280396763850764e-06,1.575,SVM_RBF,1.667,3
+vru_present,15,5,11.7867,0.019010219569060148,1.575,SVM_RBF,1.933,1

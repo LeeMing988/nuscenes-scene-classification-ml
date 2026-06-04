@@ -1,0 +1,21 @@
+model,attribute,selected_hyperparameters
+LogisticRegression,time_of_day,C=1.0 (7/15)
+LogisticRegression,vehicle_density,C=0.01 (15/15)
+LogisticRegression,vru_present,C=0.01 (15/15)
+LogisticRegression,weather,C=0.1 (9/15)
+MLP,time_of_day,"alpha=0.0001 (15/15); hidden_layer_sizes=(64,) (9/15)"
+MLP,vehicle_density,"alpha=0.001 (12/15); hidden_layer_sizes=(256,) (7/15)"
+MLP,vru_present,"alpha=0.001 (10/15); hidden_layer_sizes=(256,) (8/15)"
+MLP,weather,"alpha=0.0001 (13/15); hidden_layer_sizes=(128,) (7/15)"
+RandomForest,time_of_day,max_depth=None (13/15); min_samples_split=5 (7/15)
+RandomForest,vehicle_density,max_depth=30 (10/15); min_samples_split=5 (7/15)
+RandomForest,vru_present,max_depth=30 (10/15); min_samples_split=10 (7/15)
+RandomForest,weather,max_depth=10 (15/15); min_samples_split=10 (10/15)
+SVM_RBF,time_of_day,C=1.0 (14/15); gamma=scale (15/15)
+SVM_RBF,vehicle_density,C=10.0 (15/15); gamma=scale (15/15)
+SVM_RBF,vru_present,C=10.0 (15/15); gamma=scale (15/15)
+SVM_RBF,weather,C=10.0 (13/15); gamma=scale (15/15)
+XGBoost,time_of_day,learning_rate=0.05 (10/15); max_depth=3 (15/15)
+XGBoost,vehicle_density,learning_rate=0.2 (8/15); max_depth=6 (11/15)
+XGBoost,vru_present,learning_rate=0.1 (9/15); max_depth=6 (12/15)
+XGBoost,weather,learning_rate=0.2 (12/15); max_depth=3 (13/15)
