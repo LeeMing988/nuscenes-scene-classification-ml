@@ -14,7 +14,7 @@ A comparative study of classical machine-learning models for **multi-attribute s
 | **Student ID** | TP118013 |
 | **Course** | Applied Machine Learning (Master in AI) |
 | **Institution** | Asia Pacific University of Technology & Innovation (APU) |
-| **Date** | May 2026 |
+| **Date** | June 2026 |
 
 ---
 
@@ -62,7 +62,7 @@ Stage 1 surfaced that 10 scenes are insufficient (degenerate weather, extreme cr
 - **RQ2.** Which scene attributes are most and least learnable from a single front-camera frame?
 - **RQ3.** Among classical model families, which performs most consistently across attributes?
 - **RQ4.** Which feature types (HOG, colour histograms, LBP, photometric statistics) are most informative per attribute?
-- **RQ5.** How much does hyperparameter tuning and class-weighted training improve over base classifiers?
+- **RQ5.** How much does hyperparameter tuning (and class weighting, where supported) improve over base classifiers?
 
 ---
 
@@ -82,6 +82,8 @@ Stage 1 surfaced that 10 scenes are insufficient (degenerate weather, extreme cr
 1. **Photometric attributes** (time-of-day, weather) — global brightness/colour/haze cues are captured well by classical holistic features; performance is strong and stable.
 2. **Structural attributes** (vehicle density, VRU presence) — reach a genuine ceiling (~0.5–0.63) because holistic features cannot count objects or localise small/distant VRUs. This ceiling holds across **all five models**, indicating it is a property of the **features**, not the classifier.
 3. **Dataset scale governs evaluation validity.** Stage 1 (10 scenes) produced unreliable estimates — 40–66% of pilot fits scored a perfect macro-F1 of 1.000 (trivially separable tiny folds), and weather was degenerate (rain confined to a single scene). The 150-scene subset enables trustworthy, tight-variance measurement. **Scaling did not raise performance; it revealed the truth.**
+
+Per-attribute model-family differences are confirmed statistically (Friedman test, all four attributes significant; Nemenyi post-hoc with critical-difference diagrams) — supporting **attribute-specific model selection** rather than one universally best classifier.
 
 ---
 
@@ -117,12 +119,13 @@ nuscenes-scene-classification-ml/
 │       ├── 00c_extract_images.ipynb           # extract CAM_FRONT subset
 │       ├── 01_attribute_labels.ipynb
 │       ├── 02_image_features.ipynb
-│       ├── 03_splits.ipynb                     # 5-fold scene-aware CV
-│       ├── 04_classical_models.ipynb           # 600 fits (5×4×2×3×5)
-│       ├── 05_compare_mini_vs_subset.ipynb     # cross-stage comparison
-│       ├── 06a_headline_results.ipynb          # primary headline tables
+│       ├── 03_splits.ipynb                    # 5-fold scene-aware CV
+│       ├── 04_classical_models.ipynb          # 600 fits (5×4×2×3×5)
+│       ├── 05_compare_mini_vs_subset.ipynb    # cross-stage comparison
+│       ├── 06a_headline_results.ipynb         # primary headline tables
 │       ├── 06b_visual_analysis_and_stats.ipynb # confusion matrices, ROC, stats
-│       └── 06c_deep_analysis.ipynb             # feature importance, error analysis, conclusions
+│       ├── 06c_deep_analysis.ipynb            # feature importance, error analysis, conclusions
+│       └── 06d_nemenyi_posthoc.ipynb          # Friedman verification, Nemenyi post-hoc, CD diagrams
 │
 ├── models/
 │   ├── v1.0-mini/fold_<k>/<attr>/             # pilot model checkpoints
@@ -133,6 +136,7 @@ nuscenes-scene-classification-ml/
 │   ├── v1.0-trainval/{metrics,predictions,figures,final}/
 │   └── comparison/{metrics,figures,final}/    # cross-stage comparison outputs
 │
+├── .gitignore
 ├── requirements.txt
 ├── folder_structure.txt
 ├── LICENSE
@@ -163,7 +167,7 @@ pip install -r requirements.txt
 
 ### Dataset
 
-The nuScenes dataset is **not redistributed** here (licensing). Obtain it from the official source.
+The **full** nuScenes dataset is **not redistributed** in this repository (licensing). Obtain it from the official source. A small, pre-extracted CAM_FRONT subset is shared via the link below **for assessment and reproducibility only**, consistent with the nuScenes non-commercial terms of use (see License).
 
 **Stage 1 — v1.0-mini (full, ~4 GB):**
 1. Register at [nuscenes.org](https://www.nuscenes.org/nuscenes#download), accept the terms.
@@ -172,7 +176,7 @@ The nuScenes dataset is **not redistributed** here (licensing). Obtain it from t
 **Stage 2 — 150-scene subset (no 380 GB download needed):**
 The full `v1.0-trainval` blobs are ~380 GB. To reproduce Stage 2 **you do not need them** — only the metadata and the extracted front-camera subset:
 1. From official nuScenes, download **`v1.0-trainval` metadata only** (the small `_meta` archive, a few hundred MB) → `data/nuscenes/v1.0-trainval/v1.0-trainval_meta/`.
-2. Download the **pre-extracted CAM_FRONT subset** (~1 GB) → `[google-drive-link-for-subset]` → place at `data/nuscenes/v1.0-trainval/samples/CAM_FRONT/`.
+2. Download the **pre-extracted CAM_FRONT subset** (~1 GB, 150 scenes) → [Google Drive](https://drive.google.com/file/d/1YhC5dVxgEHdFl0MSIM2ucA0pem2PYehK/view?usp=sharing) → place at `data/nuscenes/v1.0-trainval/samples/CAM_FRONT/`.
 
 > To regenerate the subset from scratch instead, download the full `v1.0-trainval` blobs and run `notebooks/v1.0-trainval/00a → 00b → 00c`.
 
@@ -180,19 +184,19 @@ The full `v1.0-trainval` blobs are ~380 GB. To reproduce Stage 2 **you do not ne
 
 ## How to run
 
-> **You do not need to retrain to reproduce the results.** All metrics, predictions, and figures are committed under `results/`. The analysis notebooks (`05`, `06a–c`, `08a–c`) read these saved outputs and regenerate every table and figure in minutes. Full model training (~38 h for Stage 2) is only needed to rebuild the models themselves.
+> **You do not need to retrain to reproduce the results.** All metrics, predictions, and figures are committed under `results/`. The analysis notebooks (`05`, `06a–d`, `08a–c`) read these saved outputs and regenerate every table and figure in minutes. Full model training (~38 h for Stage 2) is only needed to rebuild the models themselves.
 
 ### Stage 1 — v1.0-mini (pilot)
 Run in order: `01 → 02 → 03 → 04 → 05a → 05b → 06 → 07 → 08a → 08b → 08c`.
 
 ### Stage 2 — v1.0-trainval (primary)
-Run in order: `00a → 00b → 00c → 01 → 02 → 03 → 04 → 05 → 06a → 06b → 06c`.
+Run in order: `00a → 00b → 00c → 01 → 02 → 03 → 04 → 05 → 06a → 06b → 06c → 06d`.
 
 | Notebook | Approx. runtime | Note |
 |---|---|---|
 | feature extraction (`03`/`02`) | minutes | HOG+colour+LBP+photometric → 6,216-dim vectors |
-| `04_classical_models` (Stage 2) | **~several hours** | 600 fits; SVM-RBF tuned is the bottleneck. **Skip if using committed results.** |
-| `05`, `06a–c` | minutes | read saved CSVs/models; regenerate all tables & figures |
+| `04_classical_models` (Stage 2) | **~38 h** | 600 fits; SVM-RBF tuned is the bottleneck. **Skip if using committed results.** |
+| `05`, `06a–d` | minutes | read saved CSVs/models; regenerate all tables & figures |
 
 > **Seeds for reproducibility:** `SEED_LIST = [42, 7, 123]`, `SPLIT_SEED = 42`.
 
@@ -206,10 +210,10 @@ Adjacent keyframes within a scene are near-duplicates; splitting them across tra
 ### Other choices
 - **Forward-cone filter:** vehicle/VRU counts use a ±30°, 50 m cone matching an ADAS front-camera field of view.
 - **Train-only scaling:** `StandardScaler` fitted on the training fold only — no test leakage.
-- **Class imbalance:** handled at the **algorithm level** (`class_weight='balanced'`), chosen over data-level resampling (SMOTE) — resampling cannot manufacture minority-class diversity from a single source scene.
+- **Class imbalance:** handled at the **algorithm level** via `class_weight='balanced'` for Logistic Regression, SVM-RBF, and Random Forest, where it is directly supported; XGBoost and MLP were guided by macro-F1 and baseline comparison instead. Algorithm-level weighting (where supported) was chosen over data-level resampling (SMOTE) — resampling cannot manufacture minority-class diversity from a single source scene.
 - **Trivial baselines:** random and majority-class baselines anchor every comparison.
-- **Base vs tuned:** all five models run with defaults (base) and grid-searched + class-weighted (tuned), inner 3-fold CV.
-- **Within-stage significance:** paired Wilcoxon signed-rank tests with Cohen's d (model/version comparison). Cross-stage comparison is reported descriptively (different datasets → unpaired).
+- **Base vs tuned:** all five models run with defaults (base) and grid-searched (tuned) via inner 3-fold CV; class weighting applies to Logistic Regression, SVM-RBF, and Random Forest only.
+- **Significance testing:** base-vs-tuned compared with paired Wilcoxon signed-rank tests and Cohen's *d*; model-family differences per attribute tested with the **Friedman test** and **Nemenyi post-hoc** analysis (critical-difference diagrams generated in `06d`). Cross-stage comparison is reported descriptively (different datasets → unpaired).
 
 ---
 
@@ -229,9 +233,11 @@ Adjacent keyframes within a scene are near-duplicates; splitting them across tra
 
 | Goal | What you need | Time |
 |---|---|---|
-| Regenerate all tables & figures | committed `results/` + run `05`/`06a–c` | minutes |
-| Inspect / re-predict with trained models | best-per-attribute models `[google-drive-link-models]` | minutes |
-| Rebuild models from scratch | metadata + image subset + run `04` | ~hours |
+| Regenerate all tables & figures | committed `results/` + run `05`/`06a–d` | minutes |
+| Inspect / re-predict with trained models | full trained-models tree, both stages ([Google Drive](https://drive.google.com/file/d/1bRWjwt0jVbAKTIKPWdCyhZPava8o_Rrt/view?usp=sharing)) | minutes |
+| Rebuild models from scratch | metadata + image subset + run `04` | ~38 h |
+
+> **Where the models go:** the archive is the full `models/` folder (both stages). Unzip so you end up with `models/v1.0-mini/…` and `models/v1.0-trainval/<attr>/…`, matching the *Repository structure* above — **not** under `data/nuscenes/`, which holds only images and metadata. If the archive expands to a top-level `models/` folder, unzip at the repo root so it merges into the existing `models/`; if it expands directly to `v1.0-mini/` and `v1.0-trainval/`, unzip into `models/`. Either way, make sure you don't end up with `models/models/…`.
 
 ---
 
