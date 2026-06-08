@@ -73,7 +73,7 @@ Stage 1 surfaced that 10 scenes are insufficient (degenerate weather, extreme cr
 | Attribute | Best model macro-F1 | Random baseline | Majority baseline | Verdict |
 |---|---|---|---|---|
 | `time_of_day` | **~0.99** | 0.45 | 0.44 | Excellent — photometric signal |
-| `weather` | **~0.90** | 0.45 | 0.44 | Strong — first valid weather result |
+| `weather` | **~0.90** | 0.45 | 0.44 | Strong — stable after expanded rain-scene coverage |
 | `vehicle_density` | **~0.51** | 0.33 | 0.17 | Above baseline; structural ceiling |
 | `vru_present` | **~0.63** | 0.50 | 0.35 | Above baseline; structural ceiling |
 
@@ -83,8 +83,7 @@ Stage 1 surfaced that 10 scenes are insufficient (degenerate weather, extreme cr
 2. **Structural attributes** (vehicle density, VRU presence) — reach a genuine ceiling (~0.5–0.63) because holistic features cannot count objects or localise small/distant VRUs. This ceiling holds across **all five models**, indicating it is a property of the **features**, not the classifier.
 3. **Dataset scale governs evaluation validity.** Stage 1 (10 scenes) produced unreliable estimates — 40–66% of pilot fits scored a perfect macro-F1 of 1.000 (trivially separable tiny folds), and weather was degenerate (rain confined to a single scene). The 150-scene subset enables trustworthy, tight-variance measurement. **Scaling did not raise performance; it revealed the truth.**
 
-Per-attribute model-family differences are confirmed statistically (Friedman test, all four attributes significant; Nemenyi post-hoc with critical-difference diagrams) — supporting **attribute-specific model selection** rather than one universally best classifier.
-
+Per-attribute model-family differences are supported by non-parametric statistical analysis (Friedman test and Nemenyi post-hoc critical-difference diagrams), suggesting **attribute-specific model selection** rather than one universally best classifier.
 ---
 
 ## Repository structure
@@ -167,7 +166,9 @@ pip install -r requirements.txt
 
 ### Dataset
 
-The **full** nuScenes dataset is **not redistributed** in this repository (licensing). Obtain it from the official source. A small, pre-extracted CAM_FRONT subset is shared via the link below **for assessment and reproducibility only**, consistent with the nuScenes non-commercial terms of use (see License).
+The **full** nuScenes dataset is **not redistributed** in this repository. Users must obtain nuScenes directly from the official source and comply with the official nuScenes terms of use.
+
+For assessment purposes, a pre-extracted CAM_FRONT subset may be provided separately to authorised markers only. This repository does not grant any independent rights to the nuScenes data; users remain responsible for ensuring that their use of the dataset complies with the official nuScenes licence.
 
 **Stage 1 — v1.0-mini (full, ~4 GB):**
 1. Register at [nuscenes.org](https://www.nuscenes.org/nuscenes#download), accept the terms.
