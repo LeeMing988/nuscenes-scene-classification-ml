@@ -174,9 +174,55 @@ For assessment purposes, a pre-extracted CAM_FRONT subset may be provided separa
 1. Register at [nuscenes.org](https://www.nuscenes.org/nuscenes#download), accept the terms.
 2. Download **`v1.0-mini`** and extract to `data/nuscenes/v1.0-mini/` (contains `maps/`, `samples/`, `sweeps/`, metadata).
 
+   ```text
+   data/nuscenes/v1.0-mini/
+   ```
+
+   The final structure should look like:
+
+   ```text
+   data/nuscenes/v1.0-mini/
+   ├── maps/
+   ├── samples/
+   ├── sweeps/
+   ├── v1.0-mini/
+   │   ├── sample.json
+   │   ├── scene.json
+   │   └── ...
+   └── ...
+   ```
+
+   Make sure the dataset is not accidentally nested as:
+
+   ```text
+   data/nuscenes/v1.0-mini/v1.0-mini/maps/
+   ```
+
+
 **Stage 2 — 150-scene subset (no 380 GB download needed):**
 The full `v1.0-trainval` blobs are ~380 GB. To reproduce Stage 2 **you do not need them** — only the metadata and the extracted front-camera subset:
 1. From official nuScenes, download **`v1.0-trainval` metadata only** (the small `_meta` archive, a few hundred MB) → `data/nuscenes/v1.0-trainval/v1.0-trainval_meta/`.
+
+ Extract/place the metadata files at:
+
+   ```text
+   data/nuscenes/v1.0-trainval/v1.0-trainval_meta/
+   ```
+
+   The final structure should look like:
+
+   ```text
+   data/nuscenes/v1.0-trainval/v1.0-trainval_meta/
+   ├── maps/
+   ├── v1.0-trainval/
+   │   ├── sample.json
+   │   ├── scene.json
+   │   ├── sample_data.json
+   │   └── ...
+   ├── v1.0-trainval_meta.txt
+   └── LICENSE
+   ```
+
 2. Download the **pre-extracted CAM_FRONT subset** (~1 GB, 150 scenes) → [Google Drive](https://drive.google.com/file/d/1YhC5dVxgEHdFl0MSIM2ucA0pem2PYehK/view?usp=sharing).
 
    Extract/place the image files directly inside:
