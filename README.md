@@ -177,7 +177,30 @@ For assessment purposes, a pre-extracted CAM_FRONT subset may be provided separa
 **Stage 2 — 150-scene subset (no 380 GB download needed):**
 The full `v1.0-trainval` blobs are ~380 GB. To reproduce Stage 2 **you do not need them** — only the metadata and the extracted front-camera subset:
 1. From official nuScenes, download **`v1.0-trainval` metadata only** (the small `_meta` archive, a few hundred MB) → `data/nuscenes/v1.0-trainval/v1.0-trainval_meta/`.
-2. Download the **pre-extracted CAM_FRONT subset** (~1 GB, 150 scenes) → [Google Drive](https://drive.google.com/file/d/1YhC5dVxgEHdFl0MSIM2ucA0pem2PYehK/view?usp=sharing) → place at `data/nuscenes/v1.0-trainval/samples/CAM_FRONT/`.
+2. Download the **pre-extracted CAM_FRONT subset** (~1 GB, 150 scenes) → [Google Drive](https://drive.google.com/file/d/1YhC5dVxgEHdFl0MSIM2ucA0pem2PYehK/view?usp=sharing).
+
+   Extract/place the image files directly inside:
+
+   ```text
+   data/nuscenes/v1.0-trainval/samples/CAM_FRONT/
+   ```
+
+   The final structure should look like:
+
+   ```text
+   data/nuscenes/v1.0-trainval/samples/CAM_FRONT/
+   ├── n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151603512404.jpg
+   ├── n008-2018-08-01-15-16-36-0400__CAM_FRONT__1533151604012404.jpg
+   └── ...
+   ```
+
+   Avoid this incorrect nested structure:
+
+   ```text
+   data/nuscenes/v1.0-trainval/samples/CAM_FRONT/CAM_FRONT/
+   ```
+
+   If the zip extracts into `CAM_FRONT/CAM_FRONT/`, move all `.jpg` images from the inner `CAM_FRONT/` folder up one level.
 
 > To regenerate the subset from scratch instead, download the full `v1.0-trainval` blobs and run `notebooks/v1.0-trainval/00a → 00b → 00c`.
 
